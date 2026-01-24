@@ -6,19 +6,34 @@
                 "package": "com.hypergryph.endfield"
             }
         },
+        "post_delay": 0,
+        "pre_delay": 0,
         "next": [
-            "ClickContinue",
-            "[JumpBack]WaitBlackScreen",
-            "[JumpBack]LoginFailed",
-            "[JumpBack]WaitCloseGameButton"
+            "OpenGame"
         ]
     },
     "PCOpenGame": {
+        "pre_delay": 0,
+        "post_delay": 0,
         "next": [
-            "ClickContinue",
-            "[JumpBack]WaitBlackScreen",
+            "OpenGame"
+        ]
+    },
+    "OpenGame": {
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "EnterGame",
+            "[JumpBack]ClickContinue",
+            "[JumpBack]CheckIn",
+            "[JumpBack]CheckInConfirmButton",
+            "[JumpBack]MonthlyCard",
+            "[JumpBack]WaitCloseGameButton",
+            "[JumpBack]CloseButton",
             "[JumpBack]LoginFailed",
-            "[JumpBack]WaitCloseGameButton"
+            "[JumpBack]WaitLoadingIcon",
+            "[JumpBack]WaitLoadingText",
+            "[JumpBack]WaitBlackScreen"
         ]
     },
     "WaitBlackScreen": {
@@ -56,6 +71,23 @@
                     63
                 ]
             }
+        }
+    },
+    "CheckInConfirmButton": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": "OpenGame/ConfirmButton.png",
+                "roi": [
+                    519,
+                    570,
+                    259,
+                    149
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
         }
     },
     "LoginFailed": {
@@ -118,16 +150,7 @@
         },
         "action": {
             "type": "Click"
-        },
-        "next": [
-            "EnterGame",
-            "[JumpBack]WaitBlackScreen",
-            "[JumpBack]WaitLoadingIcon",
-            "[JumpBack]WaitLoadingText",
-            "[JumpBack]MonthlyCard",
-            "[JumpBack]CheckIn",
-            "[JumpBack]CloseButton"
-        ]
+        }
     },
     "WaitLoadingIcon": {
         "recognition": {
@@ -187,10 +210,10 @@
                     "今日月卡奖励"
                 ],
                 "roi": [
-                    519,
-                    549,
-                    232,
-                    54
+                    499,
+                    458,
+                    314,
+                    159
                 ]
             }
         },
@@ -203,7 +226,7 @@
             "type": "OCR",
             "param": {
                 "expected": [
-                    "一键领取"
+                    "领取"
                 ],
                 "roi": [
                     942,
@@ -246,8 +269,7 @@
     },
     "waitCloseButton": {
         "action": {
-            "type": "Click",
-            "target": "CollectRewards"
+            "type": "Click"
         }
     },
     "CloseButton": {
@@ -256,11 +278,12 @@
             "param": {
                 "template": "OpenGame/CloseButton.png",
                 "roi": [
-                    1197,
-                    70,
-                    49,
-                    54
-                ]
+                    928,
+                    10,
+                    345,
+                    281
+                ],
+                "threshold": 0.5
             }
         },
         "action": {
