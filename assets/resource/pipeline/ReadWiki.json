@@ -121,10 +121,10 @@
             "param": {
                 "template": "ReadWiki/WikiUnreadBadge.png",
                 "roi": [
-                    21,
-                    51,
-                    350,
-                    58
+                    31,
+                    50,
+                    229,
+                    635
                 ]
             }
         },
