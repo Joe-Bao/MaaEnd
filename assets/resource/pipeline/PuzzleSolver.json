@@ -7,6 +7,7 @@
             "PuzzleSolverOnScenePrepare",
             "PuzzleSolverOnSceneMain",
             "PuzzleSolverMain" // 循环检测
+
         ]
     },
     "PuzzleSolverOnScenePrepare": {
@@ -60,7 +61,7 @@
         "ratelimit": 250 // 快速轮询
     },
     "PuzzleSolverFindUnavailableTip": {
-        // 查找是否存在“有尚未了解的元件样式”的提示，此时不能进行游戏
+        // 查找是否存在“有尚未了解的元件样式”的提示，此时跳过
         "recognition": "TemplateMatch",
         "template": "PuzzleSolver/TipUnavailable.png",
         "roi": [
@@ -69,11 +70,10 @@
             129,
             128
         ],
-        "action": "ClickKey",
-        "key": 27, // ESC
-        "pre_delay": 1500,
+        "post_delay": 5000,
         "next": [
             "PuzzleSolverMain" // 重试检测
+
         ],
         "focus": {
             "Node.Recognition.Succeeded": "❌ 检测到未满足拼图所需条件（请先去获取新元件）"
@@ -91,6 +91,7 @@
         ],
         "next": [
             "PuzzleSolverMain" // 重试检测
+
         ]
     },
     "PuzzleSolverSolvePuzzleReady": {
@@ -99,6 +100,7 @@
         "next": [
             "PuzzleSolverSolvePuzzle",
             "PuzzleSolverMain" // 重试检测
+
         ],
         "timeout": 10000 // 缩小超时阈值（默认 20000）
     },
@@ -136,12 +138,12 @@
         "pre_wait_freezes": 500, // 等待结算动画结束
         "next": [
             "PuzzleSolverMain" // 继续检测
+
         ]
     },
     "WaitStable": {
         // 等待游戏状态稳定
         "recognition": "DirectHit",
-        "action": "DoNothing",
         "pre_wait_freezes": 100
     }
 }
