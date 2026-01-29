@@ -1,7 +1,9 @@
 package itemtransfer
 
 import (
+	"errors"
 	"image"
+	"time"
 
 	maa "github.com/MaaXYZ/maa-framework-go/v3"
 	"github.com/rs/zerolog/log"
@@ -37,7 +39,8 @@ const (
 )
 
 const (
-	ResetInvViewSwipeTimes = 5
+	ResetInvViewSwipeTimes     = 5
+	ResetInvViewScrollDistance = 120 * 10
 )
 
 type Inventory int
@@ -175,39 +178,38 @@ func ItemBoxRoi(inv Inventory, gridRowY, gridColX int) maa.Rect {
 	return maa.Rect{x, y, w, h}
 }
 
-func HoverOnto(ctx *maa.Context, inv Inventory, gridRowY, gridColX int) (success bool) {
+func HoverOnto(ctx *maa.Context, inv Inventory, gridRowY, gridColX int) (err error) {
 	log.Debug().
 		Str("inventory", inv.String()).
 		Int("grid_row_y", gridRowY).
 		Int("grid_col_x", gridColX).
 		Msg("Agent Start Hovering onto Item")
-	success = ctx.RunActionDirect(
+	if !ctx.RunActionDirect(
 		maa.NodeActionTypeSwipe,
 		maa.NodeSwipeParam{
 			OnlyHover: true,
 		},
 		Pointize(TooltipRoi(inv, gridRowY, gridColX)),
 		nil,
-	).Success
-	if success {
-		log.Debug().
-			Str("inventory", inv.String()).
-			Int("grid_row_y", gridRowY).
-			Int("grid_col_x", gridColX).
-			Msg("Agent Successfully Hovered to Item")
-	} else {
+	).Success {
 		log.Error().
 			Str("inventory", inv.String()).
 			Int("grid_row_y", gridRowY).
 			Int("grid_col_x", gridColX).
 			Msg("Agent Failed Hovering to Item")
+		return errors.New("Agent Failed Hovering to Item")
 	}
-	return success
+	log.Debug().
+		Str("inventory", inv.String()).
+		Int("grid_row_y", gridRowY).
+		Int("grid_col_x", gridColX).
+		Msg("Agent Successfully Hovered to Item")
+	return nil
 }
 
 func MoveAndShot(ctx *maa.Context, inv Inventory, gridRowY, gridColX int) (img image.Image) {
 	// Step 1 - Hover to item
-	if !HoverOnto(ctx, inv, gridRowY, gridColX) {
+	if HoverOnto(ctx, inv, gridRowY, gridColX) != nil {
 		log.Error().
 			Str("inventory", inv.String()).
 			Int("grid_row_y", gridRowY).
@@ -232,38 +234,97 @@ func MoveAndShot(ctx *maa.Context, inv Inventory, gridRowY, gridColX int) (img i
 	return controller.CacheImage()
 }
 
-func ResetInventoryView(ctx *maa.Context, inv Inventory, inverse bool) (success bool) {
+func ResetInventoryView(ctx *maa.Context, inv Inventory, inverse bool) (err error) {
 	log.Debug().
 		Str("inventory", inv.String()).
+		Bool("inverse", inverse).
 		Msg("Agent Requested a Reset to Inventory View")
+	if !ctx.RunActionDirect(
+		maa.NodeActionTypeScroll,
+		maa.NodeScrollParam{
+			Dy: ResetInvViewScrollDistance,
+		},
+		Pointize(TooltipRoi(inv, 0, 0)),
+		nil,
+	).Success {
+		log.Error().
+			Str("inventory", inv.String()).
+			Bool("inverse", inverse).
+			Msg("Agent Failed Resetting Inventory View")
+		return errors.New("Agent Failed Resetting Inventory View")
+	}
+	log.Debug().
+		Str("inventory", inv.String()).
+		Bool("inverse", inverse).
+		Msg("Agent Successfully Reset Inventory View")
+
+	// what the hell
+	// this pyramid waits until screen became stable
+	ctx.RunTask(
+		"ItemTransferWaitFreeze101",
+		maa.NewPipeline().
+			AddNode(
+				maa.NewNode(
+					"ItemTransferWaitFreeze101",
+					maa.WithPostWaitFreezes(
+						maa.WaitFreezes(
+							maa.WithWaitFreezesTarget(
+								maa.NewTargetRect(
+									maa.Rect{
+										143,
+										122,
+										993,
+										418,
+									},
+								),
+							),
+							maa.WithWaitFreezesTime(
+								700*time.Millisecond,
+							),
+						),
+					),
+				),
+			),
+	)
+	return nil
+}
+
+func ResetInventoryView2(ctx *maa.Context, inv Inventory, inverse bool) (err error) {
 	params := maa.NodeSwipeParam{}
-	RightUpCorner := Pointize(ItemBoxRoi(inv, 0, inv.Columns()-1))
-	RightUpCornerOffset := maa.Rect{BoxSize + (GridInterval / 2), (GridInterval / 2)}
-	RightDownCorner := Pointize(ItemBoxRoi(inv, RowsPerPage-1, inv.Columns()-1))
-	RightDownCornerOffset := maa.Rect{BoxSize + (GridInterval / 2), BoxSize - (GridInterval / 2)}
+	UpCorner := Pointize(ItemBoxRoi(inv, 0, 0))
+	UpCornerOffset := maa.Rect{-(GridInterval / 2), (GridInterval / 2)}
+	DownCorner := Pointize(ItemBoxRoi(inv, RowsPerPage-1, 0))
+	DownCornerOffset := maa.Rect{-(GridInterval / 2), -(GridInterval / 2)}
+	log.Debug().
+		Str("inventory", inv.String()).
+		Bool("inverse", inverse).
+		Int("up_x", UpCorner.X()+UpCornerOffset.X()).
+		Int("up_y", UpCorner.Y()+UpCornerOffset.Y()).
+		Int("down_x", DownCorner.X()+DownCornerOffset.X()).
+		Int("down_y", DownCorner.Y()+DownCornerOffset.Y()).
+		Msg("Agent Requested a Reset to Inventory View")
 	if !inverse {
-		params.Begin = maa.NewTargetRect(RightUpCorner)
-		params.BeginOffset = RightUpCornerOffset
-		params.End = []maa.Target{maa.NewTargetRect(RightDownCorner)}
-		params.EndOffset = []maa.Rect{RightDownCornerOffset}
+		params.Begin = maa.NewTargetRect(UpCorner)
+		params.BeginOffset = UpCornerOffset
+		params.End = []maa.Target{maa.NewTargetRect(DownCorner)}
+		params.EndOffset = []maa.Rect{DownCornerOffset}
 	} else {
-		params.Begin = maa.NewTargetRect(RightDownCorner)
-		params.BeginOffset = RightDownCornerOffset
-		params.End = []maa.Target{maa.NewTargetRect(RightUpCorner)}
-		params.EndOffset = []maa.Rect{RightUpCornerOffset}
+		params.Begin = maa.NewTargetRect(DownCorner)
+		params.BeginOffset = DownCornerOffset
+		params.End = []maa.Target{maa.NewTargetRect(UpCorner)}
+		params.EndOffset = []maa.Rect{UpCornerOffset}
 	}
 	for range ResetInvViewSwipeTimes {
-		success = ctx.RunActionDirect(
+		if !ctx.RunActionDirect(
 			maa.NodeActionTypeSwipe,
 			params,
 			maa.Rect{},
 			nil,
-		).Success
-		if !success {
+		).Success {
 			log.Error().
 				Str("inventory", inv.String()).
 				Msg("Error occurred while swiping, in ResetInventory")
-			return false
+			return errors.New("Error occurred while swiping, in ResetInventory")
 		}
 		log.Trace().
 			Str("inventory", inv.String()).
@@ -272,5 +333,5 @@ func ResetInventoryView(ctx *maa.Context, inv Inventory, inverse bool) (success 
 	log.Debug().
 		Str("inventory", inv.String()).
 		Msg("Done Reset Inventory View")
-	return true
+	return nil
 }

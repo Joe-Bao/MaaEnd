@@ -7,6 +7,7 @@
                 "custom_recognition_param": {
                     "ItemName": "[PLACEHOLDER]",
                     "ContainerContent": null, // null(nil) as default, indicating not a cantainer
+                    "FirstRun": true,
                     "ItemLastFoundRowAbs": null,
                     "ItemLastFoundColumnX": null
                 }
@@ -27,7 +28,7 @@
             //     }
         },
         "next": [
-            "[JumpBack]ItemTransferRegionSwitcherEntry",
+            "[JumpBack]ItemTransferEnterRegionSwitcher",
             "ItemTransferClickDestination"
         ],
         "focus": {
@@ -39,7 +40,7 @@
             "Node.Action.Failed": "$node.ItemTransferToBackpack.focus.action.failed"
         }
     },
-    "ItemTransferRegionSwitcherEntry": {
+    "ItemTransferEnterRegionSwitcher": {
         "recognition": {
             "type": "TemplateMatch",
             "param": {
@@ -57,12 +58,12 @@
             "type": "Click"
         },
         "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferRegionSwitcherEntry.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferRegionSwitcherEntry.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferRegionSwitcherEntry.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferRegionSwitcherEntry.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferRegionSwitcherEntry.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferRegionSwitcherEntry.focus.action.failed"
+            "Node.Recognition.Starting": "$node.ItemTransferEnterRegionSwitcher.focus.recognition.starting",
+            "Node.Recognition.Succeeded": "$node.ItemTransferEnterRegionSwitcher.focus.recognition.succeeded",
+            "Node.Recognition.Failed": "$node.ItemTransferEnterRegionSwitcher.focus.recognition.failed",
+            "Node.Action.Starting": "$node.ItemTransferEnterRegionSwitcher.focus.action.starting",
+            "Node.Action.Succeeded": "$node.ItemTransferEnterRegionSwitcher.focus.action.succeeded",
+            "Node.Action.Failed": "$node.ItemTransferEnterRegionSwitcher.focus.action.failed"
         }
     },
     "ItemTransferRegionSwitcherConfirm": {
@@ -90,7 +91,15 @@
             "Node.Action.Succeeded": "$node.ItemTransferRegionSwitcherConfirm.focus.action.succeeded",
             "Node.Action.Failed": "$node.ItemTransferRegionSwitcherConfirm.focus.action.failed"
         },
-        "post_delay": 2000,
+        "post_wait_freezes": {
+            "time": 300,
+            "target": [
+                153,
+                548,
+                969,
+                64
+            ]
+        },
         "next": [
             "ItemTransferCloseRegionSwitcher"
         ]
@@ -143,7 +152,8 @@
         },
         "next": [
             "[JumpBack]ItemTransferRegionSwitcherConfirm",
-            "ItemTransferEnsureDestination"
+            "ItemTransferAtDestination",
+            "ItemTransferClickDestination" // Fallback in case click fails
         ],
         "focus": {
             "Node.Recognition.Starting": "$node.ItemTransferClickDestination.focus.recognition.starting",
@@ -173,7 +183,8 @@
         },
         "next": [
             "[JumpBack]ItemTransferRegionSwitcherConfirm",
-            "ItemTransferEnsureOrigin"
+            "ItemTransferAtOrigin",
+            "ItemTransferClickDestination" // Fallback in case click fails
         ],
         "focus": {
             "Node.Recognition.Starting": "$node.ItemTransferClickOrigin.focus.recognition.starting",
@@ -184,7 +195,7 @@
             "Node.Action.Failed": "$node.ItemTransferClickOrigin.focus.action.failed"
         }
     },
-    "ItemTransferEnsureDestination": {
+    "ItemTransferAtDestination": {
         "recognition": {
             "type": "OCR",
             "param": {
@@ -199,12 +210,12 @@
             }
         },
         "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferEnsureDestination.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferEnsureDestination.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferEnsureDestination.focus.recognition.failed"
+            "Node.Recognition.Starting": "$node.ItemTransferAtDestination.focus.recognition.starting",
+            "Node.Recognition.Succeeded": "$node.ItemTransferAtDestination.focus.recognition.succeeded",
+            "Node.Recognition.Failed": "$node.ItemTransferAtDestination.focus.recognition.failed"
         }
     },
-    "ItemTransferEnsureOrigin": {
+    "ItemTransferAtOrigin": {
         "recognition": {
             "type": "OCR",
             "param": {
@@ -219,9 +230,9 @@
             }
         },
         "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferEnsureOrigin.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferEnsureOrigin.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferEnsureOrigin.focus.recognition.failed"
+            "Node.Recognition.Starting": "$node.ItemTransferAtOrigin.focus.recognition.starting",
+            "Node.Recognition.Succeeded": "$node.ItemTransferAtOrigin.focus.recognition.succeeded",
+            "Node.Recognition.Failed": "$node.ItemTransferAtOrigin.focus.recognition.failed"
         }
     }
 }
