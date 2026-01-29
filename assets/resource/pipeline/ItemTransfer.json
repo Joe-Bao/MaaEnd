@@ -42,7 +42,7 @@
     "ItemTransferRegionSwitcherEntry": {
         "recognition": {
             "type": "TemplateMatch",
-            "param:": {
+            "param": {
                 "roi": [
                     545,
                     97,
