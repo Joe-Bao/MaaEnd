@@ -200,6 +200,8 @@
             "option": [
                 "WhatToTransfer",
                 "TransferringContainer",
+                "TransferOrigin",
+                "TransferDestination",
                 "TransferAll"
             ],
             "controller": [
@@ -916,6 +918,100 @@
                     }
                 }
             }
+        },
+        "TransferOrigin": {
+            "type": "select",
+            "label": "$option.TransferOrigin.label",
+            "cases": [
+                {
+                    "name": "valley",
+                    "label": "$common.in-game.region.valley",
+                    "pipeline_override": {
+                        "ItemTransferClickOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地"
+                                }
+                            }
+                        },
+                        "ItemTransferEnsureOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地仓库"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "wuling",
+                    "label": "$common.in-game.region.wuling",
+                    "pipeline_override": {
+                        "ItemTransferClickOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵"
+                                }
+                            }
+                        },
+                        "ItemTransferEnsureOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵仓库"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "default_case": "valley"
+        },
+        "TransferDestination": {
+            "type": "select",
+            "label": "$option.TransferDestination.label",
+            "cases": [
+                {
+                    "name": "valley",
+                    "label": "$common.in-game.region.valley",
+                    "pipeline_override": {
+                        "ItemTransferClickDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地"
+                                }
+                            }
+                        },
+                        "ItemTransferEnsureDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地仓库"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "wuling",
+                    "label": "$common.in-game.region.wuling",
+                    "pipeline_override": {
+                        "ItemTransferClickDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵"
+                                }
+                            }
+                        },
+                        "ItemTransferEnsureDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵仓库"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "default_case": "wuling"
         },
         "TransferAll": {
             "type": "switch",

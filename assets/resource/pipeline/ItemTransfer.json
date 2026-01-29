@@ -18,6 +18,10 @@
                 "custom_action": "LeftClickWithCtrlDown"
             }
         },
+        "next": [
+            "[JumpBack]ItemTransferRegionSwitcherEntry" //,
+            // "ItemTransferClickDestination"
+        ],
         // "param": {
         //         "custom_action": "TransferItemToBackpack",
         //         "custom_action_param": {
@@ -33,6 +37,151 @@
             "Node.Action.Starting": "$node.ItemTransferToBackpack.focus.action.starting",
             "Node.Action.Succeeded": "$node.ItemTransferToBackpack.focus.action.succeeded",
             "Node.Action.Failed": "$node.ItemTransferToBackpack.focus.action.failed"
+        }
+    },
+    "ItemTransferRegionSwitcherEntry": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param:": {
+                "roi": [
+                    545,
+                    97,
+                    199,
+                    87
+                ],
+                "template": "ItemTransfer/SwitcherEntry.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Recognition.Starting": "TODO RECOG START",
+            "Node.Action.Succeeded": "$node.ItemTransferRegionSwitcherEntry.focus.action.succeeded"
+        }
+    },
+    "ItemTransferRegionSwitcherConfirm": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    905,
+                    536,
+                    219,
+                    88
+                ],
+                "template": "ItemTransfer/Switcher.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "focus": {
+            "Node.Action.Succeeded": "$node.ItemTransferRegionSwitcherEntry.focus.action.succeeded"
+        },
+        "post_delay": 2000,
+        "next": [
+            "ItemTransferCloseRegionSwitcher"
+        ]
+    },
+    "ItemTransferCloseRegionSwitcher": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "roi": [
+                    905,
+                    536,
+                    219,
+                    88
+                ],
+                "template": "ItemTransfer/RepoConnected.png",
+                "order_by": "Score"
+            }
+        },
+        "action": {
+            "type": "ClickKey",
+            "param": {
+                "key": 27 // Esc
+            }
+        },
+        "focus": {
+            "Node.Action.Succeeded": "$node.ItemTransferCloseRegionSwitcher.focus.action.succeeded"
+        },
+    },
+    "ItemTransferClickDestination": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    500,
+                    200,
+                    500,
+                    300
+                ],
+                "order_by": "Expected",
+                "expected": "[PLACEHOLDER]"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "[JumpBack]ItemTransferRegionSwitcherConfirm",
+            "ItemTransferEnsureDestination"
+        ]
+    },
+    "ItemTransferClickOrigin": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    500,
+                    200,
+                    500,
+                    300
+                ],
+                "order_by": "Expected",
+                "expected": "[PLACEHOLDER]"
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "[JumpBack]ItemTransferRegionSwitcherConfirm",
+            "ItemTransferEnsureOrigin"
+        ]
+    },
+    "ItemTransferEnsureDestination": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    184,
+                    102,
+                    131,
+                    71
+                ],
+                "order_by": "Expected",
+                "expected": "[PLACEHOLDER]"
+            }
+        }
+    },
+    "ItemTransferEnsureOrigin": {
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "roi": [
+                    184,
+                    102,
+                    131,
+                    71
+                ],
+                "order_by": "Expected",
+                "expected": "[PLACEHOLDER]"
+            }
         }
     }
 }

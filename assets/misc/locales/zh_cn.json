@@ -1,4 +1,6 @@
 {
+    "common.in-game.region.valley": "四号谷地",
+    "common.in-game.region.wuling": "武陵",
     "task.AndroidOpenGame.label": "🎮打开游戏",
     "task.AndroidOpenGame.description": "安卓端打开游戏，需先手动打开模拟器",
     "task.PCOpenGame.label": "🎮进入游戏",
@@ -68,6 +70,8 @@
     "option.ContainerContent.label": "内容物设置",
     "option.ContainerContent.input.label": "内容物",
     "option.ContainerContent.input.description": "待转移容器内的内容物名称",
+    "option.TransferOrigin.label": "起点",
+    "option.TransferDestination.label": "终点",
     "option.TransferAll.label": "手动停止",
     "option.TransferAll.description": "不设置自动停止次数，直到搬空或不满一背包为止",
     "option.TransferTimes.label": "次数设置",
@@ -80,5 +84,8 @@
     "node.ItemTransferToBackpack.focus.action.starting": "开始批量移动到背包",
     "node.ItemTransferToBackpack.focus.action.succeeded": "已批量移动到背包",
     "node.ItemTransferToBackpack.focus.action.failed": "批量移动到背包时出错",
+    "node.ItemTransferRegionSwitcherEntry.focus.action.succeeded": "已点击仓库切换键",
+    "node.ItemTransferRegionSwitcherConfirm.focus.action.succeeded": "已确认切换仓库",
+    "node.ItemTransferCloseRegionSwitcher.focus.action.succeeded": "已退出仓库切换页面",
     "contact.file": "misc/locales/CONTACT/CONTACT.zh_cn.md"
 }
