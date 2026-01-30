@@ -304,6 +304,7 @@
         "AutoCloseInteraction": {
             "type": "switch",
             "label": "自动交互处理",
+            "default": "No",
             "description": "开启后将自动处理：指引光标、说明书翻页、全屏点击继续、档案关闭等",
             "cases": [
                 {
@@ -362,9 +363,9 @@
         },
         "EnableTutorialGuide": {
             "label": "点击指引光标",
-            "description": "自动点击屏幕上出现的白色指引手势/箭头（老普之手！）",
+            "description": "自动点击屏幕上出现的白色指引手势/箭头（老普之手！🛑开启后会严重拖慢轮循速度！！）",
             "type": "switch",
-            "default": "Yes",
+            "default": "No",
             "cases": [
                 {
                     "name": "Yes",
