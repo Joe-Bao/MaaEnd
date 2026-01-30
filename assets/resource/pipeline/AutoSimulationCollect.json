@@ -8,15 +8,17 @@
     },
     "SimulationSpaceEntry": {
         "doc": "第一步：识别模拟空间主界面",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/SimulatorHeader.png",
-        "threshold": 0.7,
+        "recognition": "OCR",
+        "expected": [
+            "模拟空间",
+            "模拟"
+        ],
         "roi": [
             28,
             6,
-            121,
-            36
-        ], // 左上角标题区域
+            150,
+            50
+        ],
         "next": [
             "Sim_ClickFilter"
         ],
@@ -34,8 +36,11 @@
     },
     "Sim_ClickFilter": {
         "doc": "第二步：点击筛选按钮",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/UnSelectedFitterButton.png",
+        "recognition": "OCR",
+        "expected": [
+            "筛选",
+            "筛选匹配"
+        ],
         "roi": [
             20,
             640,
@@ -84,13 +89,15 @@
     },
     "Sim_SelectUnfinished": {
         "doc": "第四步：点击[未完成]",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/UnselectedUnfinished.png",
+        "recognition": "OCR",
+        "expected": [
+            "未完成"
+        ],
         "roi": [
             230,
             430,
             290,
-            60
+            70
         ],
         "action": "Click",
         "post_wait_freezes": 200,
@@ -117,22 +124,20 @@
     },
     "Sim_SaveFilter": {
         "doc": "第五步：点击保存/确定",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/SaveButton.png",
-        "roi": [
-            880,
-            520,
-            218,
-            54
+        "recognition": "OCR",
+        "expected": [
+            "保存",
+            "确定"
         ],
+        "roi": [
+            800,
+            500,
+            400,
+            200
+        ] // 覆盖右下角操作区域
+        ,
         "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    960,
-                    540
-                ]
-            }
+            "type": "Click"
         },
         "post_wait_freezes": 200,
         "next": [
@@ -143,8 +148,11 @@
     },
     "Sim_LoopClickFilter": {
         "doc": "[循环开始]，点击筛选按钮",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/SelectedFitterButton.png",
+        "recognition": "OCR",
+        "expected": [
+            "筛选",
+            "筛选匹配"
+        ],
         "roi": [
             20,
             640,
@@ -167,22 +175,19 @@
     },
     "Sim_LoopSaveFilter": {
         "doc": "循环：点击保存/确定",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/SaveButton.png",
-        "roi": [
-            880,
-            520,
-            218,
-            54
+        "recognition": "OCR",
+        "expected": [
+            "保存"
         ],
+        "roi": [
+            800,
+            500,
+            400,
+            200
+        ] // 覆盖右下角操作区域
+        ,
         "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    960,
-                    540
-                ]
-            }
+            "type": "Click"
         },
         "post_wait_freezes": 200,
         "next": [
@@ -193,23 +198,20 @@
     },
     "Sim_Loop_ClaimReward": {
         "doc": "第六步：一个个点击领取奖励",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/CompleteSimulation.png",
-        "threshold": 0.8,
+        "recognition": "OCR",
+        "expected": [
+            "已掌握",
+            "掌握",
+            "直接完成模拟"
+        ],
         "roi": [
             870,
-            510,
+            100,
             390,
-            50
-        ], // 列表区域
+            300
+        ],
         "action": {
-            "type": "Click",
-            "param": {
-                "target": [
-                    1040,
-                    530
-                ]
-            }
+            "type": "Click"
         },
         "post_wait_freezes": 250, // 领取后通常有弹窗，等一下
         "next": [
@@ -219,15 +221,16 @@
     },
     "Sim_ComfirmReward": {
         "doc": "第七步：确认领取",
-        "recognition": "TemplateMatch",
-        "template": "SimulationSpace/ConfirmButton.png",
-        "threshold": 0.8,
+        "recognition": "OCR",
+        "expected": [
+            "确认"
+        ],
         "roi": [
-            640,
-            430,
-            220,
-            70
-        ], // 列表区域
+            600,
+            400,
+            300,
+            150
+        ],
         "action": "Click",
         "post_wait_freezes": 400, // 领取后通常有弹窗，等一下
         "next": [
