@@ -1,0 +1,222 @@
+{
+    "task": [
+        {
+            "name": "ItemTransfer",
+            "label": "$task.ItemTransfer.label",
+            "entry": "ItemTransfer",
+            "default_check": true,
+            "description": "$task.ItemTransfer.description",
+            "option": [
+                "WhatToTransfer",
+                "TransferringContainer",
+                "TransferAll",
+                "OriginRegion",
+                "DestinationRegion"
+            ],
+            "controller": [
+                "Win32",
+                "Win32-Window",
+                "Win32-Front"
+            ]
+        }
+    ],
+    "option": {
+        "WhatToTransfer": {
+            "type": "input",
+            "label": "$ItemTransfer.option.WhatToTransfer.label",
+            "inputs": [
+                {
+                    "name": "WhatToTransfer",
+                    "label": "$ItemTransfer.option.WhatToTransfer.input.label",
+                    "default": "中容谷地电池",
+                    "pipeline_type": "string"
+                }
+            ],
+            "pipeline_override": {
+                //todo
+            },
+        },
+        "TransferringContainer": {
+            "type": "switch",
+            "label": "$ItemTransfer.option.TransferringContainer.label",
+            "description": "$ItemTransfer.option.TransferringContainer.description",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "option": [
+                        "ContainerContent"
+                    ]
+                    //todo
+                },
+                {
+                    "name": "No"
+                }
+            ],
+            "default_case": "No"
+        },
+        "ContainerContent": {
+            "type": "input",
+            "label": "$ItemTransfer.option.ContainerContent.label",
+            "inputs": [
+                {
+                    "name": "Content",
+                    "label": "$ItemTransfer.option.ContainerContent.input.label",
+                    "description": "$ItemTransfer.option.ContainerContent.input.description",
+                    "default": "锦草溶液",
+                    "pipeline_type": "string"
+                }
+            ],
+            "pipeline_override": {
+                "ItemTransfer": {
+                    "action": {
+                        "param": {
+                            "custom_action_param": {
+                                "ContainerContent": "{Content}"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "TransferAll": {
+            "type": "switch",
+            "label": "$ItemTransfer.option.TransferAll.label",
+            "description": "$ItemTransfer.option.TransferAll.description",
+            "cases": [
+                {
+                    "name": "Yes"
+                },
+                {
+                    "name": "No",
+                    "option": [
+                        "TransferTimes"
+                    ]
+                }
+            ],
+            "default_case": "No"
+        },
+        "OriginRegion": {
+            "type": "select",
+            "label": "$ItemTransfer.option.OriginRegion.label",
+            "description": "$ItemTransfer.option.OriginRegion.description",
+            "cases": [
+                {
+                    "name": "Wuling",
+                    "label": "$global.region.Wuling",
+                    "pipeline_override": {
+                        "ItemTransferClickOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵|Wuling"
+                                }
+                            }
+                        },
+                        "ItemTransferAtOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵|Wuling"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "ValleyIV",
+                    "label": "$global.region.ValleyIV",
+                    "pipeline_override": {
+                        "ItemTransferClickOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地|四號谷地 | Valley IV"
+                                }
+                            }
+                        },
+                        "ItemTransferAtOrigin": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地|四號谷地 | Valley IV"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "default": "ValleyIV"
+        },
+        // 3. 新增：目标区域选择 (Destination)
+        "DestinationRegion": {
+            "type": "select",
+            "label": "$ItemTransfer.option.DestinationRegion.label",
+            "description": "$ItemTransfer.option.DestinationRegion.description",
+            "cases": [
+                {
+                    "name": "Wuling",
+                    "label": "$global.region.Wuling",
+                    "pipeline_override": {
+                        "ItemTransferClickDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵|Wuling"
+                                }
+                            }
+                        },
+                        "ItemTransferAtDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "武陵|Wuling"
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "ValleyIV",
+                    "label": "$global.region.ValleyIV",
+                    "pipeline_override": {
+                        "ItemTransferClickDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地|四號谷地 | Valley IV"
+                                }
+                            }
+                        },
+                        "ItemTransferAtDestination": {
+                            "recognition": {
+                                "param": {
+                                    "expected": "四号谷地|四號谷地 | Valley IV"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "default": "Wuling"
+        },
+        "TransferTimes": {
+            "type": "input",
+            "label": "$ItemTransfer.option.TransferTimes.label",
+            "inputs": [
+                {
+                    "name": "Times",
+                    "label": "$ItemTransfer.option.TransferTimes.input.label",
+                    "description": "$ItemTransfer.option.TransferTimes.input.description",
+                    "default": "1",
+                    "pipeline_type": "int",
+                    "verify": "^((?!0)\\d+|0)$",
+                    "pattern_msg": "$ItemTransfer.option.TransferTimes.input.error"
+                }
+            ],
+            "pipeline_override": {
+                "ItemTransfer": {
+                    "action": {
+                        "param": {
+                            "custom_action_param": {
+                                "TransferTimes": "{Times}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
