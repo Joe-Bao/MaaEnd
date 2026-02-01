@@ -20,6 +20,7 @@
                 ]
             }
         },
+        "pre_delay": 10,
         "next": [
             "Guard_CheckMailboxandClickToContinue",
             "RealTimeTaskMain"
@@ -114,6 +115,7 @@
         "focus": {
             "Node.Recognition.Succeeded": "识别到剧情文档/语音，准备关闭"
         },
+        "pre_delay": 10,
         "action": {
             "type": "Click",
             "param": {
