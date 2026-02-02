@@ -9,20 +9,14 @@
             }
         },
         "next": [
+            "ItemTransferTaskSuccess",
             "ItemTransferAtOrigin",
-            "ItemTransferMain"
+            "[JumpBack]ItemTransferEnterRegionSwitcher",
+            "ItemTransferClickOrigin"
         ]
     },
     "ItemTransferToBackpack": {
-        "post_wait_freezes": 10,
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferToBackpack.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferToBackpack.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferToBackpack.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferToBackpack.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferToBackpack.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferToBackpack.focus.action.failed"
-        },
+        "post_wait_freezes": 100,
         "recognition": {
             "type": "Custom",
             "param": {
@@ -51,14 +45,6 @@
         ]
     },
     "ItemTransferEnterRegionSwitcher": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferEnterRegionSwitcher.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferEnterRegionSwitcher.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferEnterRegionSwitcher.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferEnterRegionSwitcher.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferEnterRegionSwitcher.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferEnterRegionSwitcher.focus.action.failed"
-        },
         "doc": " 进入物品转移区域切换界面。",
         "recognition": {
             "type": "TemplateMatch",
@@ -85,16 +71,8 @@
         }
     },
     "ItemTransferRegionSwitcherConfirm": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferRegionSwitcherConfirm.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferRegionSwitcherConfirm.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferRegionSwitcherConfirm.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferRegionSwitcherConfirm.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferRegionSwitcherConfirm.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferRegionSwitcherConfirm.focus.action.failed"
-        },
         "post_wait_freezes": {
-            "time": 300,
+            "time": 200,
             "target": [
                 153,
                 548,
@@ -131,14 +109,6 @@
         ]
     },
     "ItemTransferCloseRegionSwitcher": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferCloseRegionSwitcher.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferCloseRegionSwitcher.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferCloseRegionSwitcher.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferCloseRegionSwitcher.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferCloseRegionSwitcher.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferCloseRegionSwitcher.focus.action.failed"
-        },
         "doc": "关闭区域切换界面。",
         "recognition": {
             "type": "TemplateMatch",
@@ -167,14 +137,6 @@
         }
     },
     "ItemTransferClickDestination": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferClickDestination.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferClickDestination.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferClickDestination.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferClickDestination.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferClickDestination.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferClickDestination.focus.action.failed"
-        },
         "doc": "点击目标区域。",
         "recognition": {
             "type": "OCR",
@@ -206,14 +168,6 @@
         ]
     },
     "ItemTransferClickOrigin": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferClickOrigin.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferClickOrigin.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferClickOrigin.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferClickOrigin.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferClickOrigin.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferClickOrigin.focus.action.failed"
-        },
         "recognition": {
             "type": "OCR",
             "param": {
@@ -243,11 +197,6 @@
         ]
     },
     "ItemTransferAtDestination": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferAtDestination.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferAtDestination.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferAtDestination.focus.recognition.failed"
-        },
         "recognition": {
             "type": "OCR",
             "param": {
@@ -272,11 +221,6 @@
         ]
     },
     "ItemTransferAtOrigin": {
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferAtOrigin.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferAtOrigin.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferAtOrigin.focus.recognition.failed"
-        },
         "recognition": {
             "type": "OCR",
             "param": {
@@ -302,14 +246,6 @@
     },
     "ItemTransferToRepository": {
         "post_wait_freezes": 10,
-        "focus": {
-            "Node.Recognition.Starting": "$node.ItemTransferToBackpack.focus.recognition.starting",
-            "Node.Recognition.Succeeded": "$node.ItemTransferToBackpack.focus.recognition.succeeded",
-            "Node.Recognition.Failed": "$node.ItemTransferToBackpack.focus.recognition.failed",
-            "Node.Action.Starting": "$node.ItemTransferToBackpack.focus.action.starting",
-            "Node.Action.Succeeded": "$node.ItemTransferToBackpack.focus.action.succeeded",
-            "Node.Action.Failed": "$node.ItemTransferToBackpack.focus.action.failed"
-        },
         "recognition": {
             "type": "Custom",
             "param": {
@@ -333,10 +269,34 @@
             }
         },
         "next": [
-            "[JumpBack]ItemTransferEnterRegionSwitcher",
+            "ItemTransferLimitSentinel"
+        ]
+    },
+    "ItemTransferLimitSentinel": {
+        "doc": "哨兵节点：检查是否达到搬运次数上限。",
+        // 逻辑分流
+        "next": [
+            "ItemTransferTaskSuccess", // 命中(Hit) -> 达到上限 -> 成功结束
+            "[JumpBack]ItemTransferEnterRegionSwitcher", // 未命中(Miss) -> 没够 -> 回主循环
             "ItemTransferClickOrigin"
         ]
     },
+    "ItemTransferTaskSuccess": {
+        "doc": "任务成功结束节点",
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "CheckTransferLimit", // 调用 Go 的检查函数
+                "custom_recognition_param": {
+                    "MaxTimes": -3 // 🔥 核心：默认是 -1，代表“无效/未配置”
+                }
+            }
+        },
+        "focus": {
+            "Node.Recognition.Succeeded": "$ItemTransfer.focus.SuccessMsg"
+        }
+    },
+    // --- 切换到：素材 ---
     "ItemTransferSwitchToMaterial": {
         "doc": "识别并点击[素材]分类标签",
         "recognition": {

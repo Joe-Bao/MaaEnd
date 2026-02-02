@@ -3,36 +3,88 @@ package itemtransfer
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/MaaXYZ/maa-framework-go/v3"
 	"github.com/rs/zerolog/log"
 )
 
+type Point struct {
+	Row int
+	Col int
+}
+
+type TransferSession struct {
+	ItemName string
+	Category string
+	// 分别记录两个区域的最后位置
+	LastPosRepo     Point
+	LastPosBackpack Point
+	MaxTimes        int // 目标次数 (<=0 代表无限)
+	CurrentCount    int // 当前已搬运次数
+}
+
+// 初始化全局缓存，默认坐标设为 -1 代表未初始化
+var currentSession = TransferSession{
+	LastPosRepo:     Point{-1, -1},
+	LastPosBackpack: Point{-1, -1},
+}
+
 func runLocate(ctx *maa.Context, arg *maa.CustomRecognitionArg, targetInv Inventory, currentNodeName string) (*maa.CustomRecognitionResult, bool) {
 	var taskParam map[string]any
+	json.Unmarshal([]byte(arg.CustomRecognitionParam), &taskParam)
 
-	err := json.Unmarshal([]byte(arg.CustomRecognitionParam), &taskParam)
-	if err != nil {
-		log.Error().
-			Err(err).
-			Str("raw_json", arg.CustomRecognitionParam).
-			Msg("Seems that we have received bad params")
+	rawName, _ := taskParam["ItemName"].(string)
+	rawCat, _ := taskParam["Category"].(string)
+
+	// 判断是否为新任务（有效参数传入）
+	isValidNewParams := rawName != "" && !strings.Contains(rawName, "{") && !strings.Contains(rawName, "ItemParName")
+	if isValidNewParams {
+		// [情况 A] 新任务：重置 Session
+		// 如果名字变了，才重置坐标；如果名字没变（比如暂停后继续），保留坐标
+		if currentSession.ItemName != rawName {
+			currentSession.ItemName = rawName
+			currentSession.Category = rawCat
+			currentSession.LastPosRepo = Point{0, 0}     // 重置回起点
+			currentSession.LastPosBackpack = Point{0, 0} // 重置回起点
+			currentSession.CurrentCount = 0
+			log.Info().Str("Item", rawName).Msg("GoService: New Session Started, Cache Reset")
+		}
+	} else {
+		// [情况 B] 循环回来的参数丢失：读取 Session
+		if currentSession.ItemName == "" {
+			return nil, false
+		}
+	}
+
+	if currentSession.MaxTimes > 0 && currentSession.CurrentCount >= currentSession.MaxTimes {
+		log.Info().
+			Int("Current", currentSession.CurrentCount).
+			Int("Max", currentSession.MaxTimes).
+			Msg("⚠️ Max transfer limit reached. Stopping recognition.")
+
 		return nil, false
 	}
 
-	itemName, ok := taskParam["ItemName"].(string)
-	if !ok {
-		log.Error().
-			Str("raw_json", arg.CustomRecognitionParam).
-			Msg("ItemName is not a string")
-		return nil, false
+	finalItemName := currentSession.ItemName
+	finalCategory := currentSession.Category
+
+	var startRow, startCol int
+	if targetInv == REPOSITORY {
+		startRow, startCol = currentSession.LastPosRepo.Row, currentSession.LastPosRepo.Col
+	} else {
+		startRow, startCol = currentSession.LastPosBackpack.Row, currentSession.LastPosBackpack.Col
 	}
-	category, _ := taskParam["Category"].(string)
-	//containerContent := userSetting["ContainerContent"] //todo put this into use
+	maxRows := RowsPerPage
+	maxCols := targetInv.Columns()
+	if startRow >= maxRows || startCol >= maxCols {
+		startRow, startCol = 0, 0
+	}
+
 	var taskName string
 
 	// 简单的映射逻辑
-	switch category {
+	switch finalCategory {
 	case "Material":
 		taskName = "ItemTransferSwitchToMaterial"
 	case "Plant":
@@ -42,73 +94,71 @@ func runLocate(ctx *maa.Context, arg *maa.CustomRecognitionArg, targetInv Invent
 		// case "All": ...
 	}
 	if taskName != "" && targetInv == REPOSITORY {
-		// 🔥 直接调用 Pipeline 节点！
-		// 这是一个同步调用，会等点击完成、post_wait 结束后才返回
 		status := ctx.RunTask(taskName).Status
 
 		if !status.Success() {
 			log.Warn().Str("task", taskName).Msg("Failed to switch category tab, trying scan anyway...")
-			// 这里可以选择 return nil, false 报错，也可以硬着头皮继续扫（万一已经在那页了呢）
 		} else {
 			log.Debug().Msg("Category switch successful.")
 		}
 	}
 
 	log.Debug().
-		Str("ItemName", itemName).
+		Str("ItemName", finalItemName).
 		Str("Target", targetInv.String()).
 		Any("ContainerContent", taskParam["ContainerContent"]).
 		Msg("Task parameters initialized")
 
-	maxCols := targetInv.Columns()
-	maxRows := RowsPerPage // 4行
-	for row := range maxRows {
-		for col := range maxCols {
-
-			// Step 1 & 2
-			img := MoveAndShot(ctx, targetInv, row, col)
-			if img == nil {
-				continue
-			}
-			// Step 3 - Call original OCR
-			log.Debug().Msg("Starting Recognition")
-			detail := ctx.RunRecognitionDirect(
-				maa.NodeRecognitionTypeOCR,
-				maa.NodeOCRParam{
-					ROI: maa.NewTargetRect(
-						TooltipRoi(targetInv, row, col),
-					),
-					OrderBy:  "Expected",
-					Expected: []string{itemName},
-				},
-				img,
-			)
-			log.Debug().Msg("Done Recognition!!!!!")
-			log.Debug().Str("detail_json", detail.DetailJson).Msg("Item OCR Full Detail")
-			if detail.Hit {
-				log.Info().
-					Int("grid_row_y", row).
-					Int("grid_col_x", col).
-					Msg("Yes That's it! We have found proper item.")
-
-				// saving cache todo move standalone
-				template := "{\"ItemTransferToBackpack\": {\"recognition\": {\"param\": {\"custom_recognition_param\": {\"ItemLastFoundRowAbs\": %d,\"ItemLastFoundColumnX\": %d,\"FirstRun\": false}}}}}"
-				defer ctx.OverridePipeline(fmt.Sprintf(template, row, col))
-
-				return &maa.CustomRecognitionResult{
-					Box:    ItemBoxRoi(targetInv, row, col),
-					Detail: detail.DetailJson,
-				}, true
-			} else {
-				log.Info().
-					Int("grid_row_y", row).
-					Int("grid_col_x", col).
-					Msg("Not this one. Bypass.")
-			}
-
+	checkSlot := func(row, col int) (*maa.CustomRecognitionResult, bool) {
+		img := MoveAndShot(ctx, targetInv, row, col)
+		if img == nil {
+			return nil, false
 		}
 
+		roi := TooltipRoi(targetInv, row, col)
+		detail := ctx.RunRecognitionDirect(
+			maa.NodeRecognitionTypeOCR,
+			maa.NodeOCRParam{
+				ROI:      maa.NewTargetRect(roi),
+				OrderBy:  "Expected",
+				Expected: []string{finalItemName},
+			},
+			img,
+		)
+
+		if detail.Hit {
+			log.Info().Str("target", targetInv.String()).Int("r", row).Int("c", col).Msg("Item Found!")
+
+			//  更新缓存：记录这次找到的位置
+			newPoint := Point{row, col}
+			if targetInv == REPOSITORY {
+				currentSession.LastPosRepo = newPoint
+			} else {
+				currentSession.LastPosBackpack = newPoint
+			}
+			if targetInv == BACKPACK {
+				currentSession.CurrentCount += 1
+			}
+			return &maa.CustomRecognitionResult{
+				Box:    ItemBoxRoi(targetInv, row, col),
+				Detail: detail.DetailJson,
+			}, true
+		}
+		return nil, false
 	}
+	totalSlots := maxRows * maxCols
+	startIndex := startRow*maxCols + startCol
+	for i := 0; i < totalSlots; i++ {
+		currentIndex := (startIndex + i) % totalSlots
+
+		currentRow := currentIndex / maxCols
+		currentCol := currentIndex % maxCols
+
+		if res, ok := checkSlot(currentRow, currentCol); ok {
+			return res, true
+		}
+	}
+
 	log.Warn().
 		Msg("No item with given name found. Please check input")
 	return nil, false
@@ -134,4 +184,50 @@ func (*BackpackLocate) Run(ctx *maa.Context, arg *maa.CustomRecognitionArg) (*ma
 	// 强制指定 BACKPACK
 	// 强制指定节点名 ItemTransferToRepository 用于缓存
 	return runLocate(ctx, arg, BACKPACK, "ItemTransferToRepository")
+}
+
+type TransferLimitChecker struct{}
+
+func (*TransferLimitChecker) Run(ctx *maa.Context, arg *maa.CustomRecognitionArg) (*maa.CustomRecognitionResult, bool) {
+	// 如果设置了上限，且当前次数已达标
+
+	var taskParam map[string]any
+	json.Unmarshal([]byte(arg.CustomRecognitionParam), &taskParam)
+	inputMax := -1
+	log.Debug().Interface("RawParams", taskParam).Msg("Debug: Check Param Content")
+	if v, ok := taskParam["MaxTimes"].(float64); ok {
+		inputMax = int(v)
+		log.Debug().
+			Int("inputMax", inputMax).Msg("GoService: Limit Checker Running")
+	}
+	if inputMax >= 0 {
+		currentSession.MaxTimes = inputMax
+	}
+
+	log.Debug().
+		Int("Count", currentSession.CurrentCount).
+		Int("Max", currentSession.MaxTimes).Msg("GoService: Limit Checker Running")
+	if currentSession.MaxTimes > 0 && currentSession.CurrentCount >= currentSession.MaxTimes {
+		log.Info().
+			Int("Count", currentSession.CurrentCount).
+			Int("Max", currentSession.MaxTimes).
+			Msg("GoService: Transfer limit reached. Signaling pipeline to stop.")
+		msgTemplate := "任务完成：已成功搬运 %d 次 %s"
+		finalMsg := fmt.Sprintf(msgTemplate, currentSession.CurrentCount, currentSession.ItemName)
+
+		overrideObj := map[string]interface{}{
+			"ItemTransferTaskSuccess": map[string]interface{}{
+				"focus": finalMsg,
+			},
+		}
+		overrideJson, _ := json.Marshal(overrideObj)
+		ctx.OverridePipeline(string(overrideJson))
+
+		log.Info().Str("Msg", finalMsg).Msg("GoService: Task limit reached, message prepared")
+		return &maa.CustomRecognitionResult{}, true
+
+	}
+
+	// 返回 Miss (False)，表示“没达标，继续干”
+	return nil, false
 }

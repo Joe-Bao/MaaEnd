@@ -6,6 +6,7 @@ func Register() {
 
 	maa.AgentServerRegisterCustomRecognition("LocateItemInRepository", &RepoLocate{})
 	maa.AgentServerRegisterCustomRecognition("LocateItemInBackpack", &BackpackLocate{})
+	maa.AgentServerRegisterCustomRecognition("CheckTransferLimit", &TransferLimitChecker{})
 	maa.AgentServerRegisterCustomAction("LeftClickWithCtrlDown", &LeftClickWithCtrlDown{})
 	// maa.AgentServerRegisterCustomRecognition("LocateItemFromBackpack")
 	// maa.AgentServerRegisterCustomAction("TransferItemToRepository")
