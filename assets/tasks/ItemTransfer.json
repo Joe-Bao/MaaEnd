@@ -3,7 +3,7 @@
         {
             "name": "ItemTransfer",
             "label": "$task.ItemTransfer.label",
-            "entry": "ItemTransferToBackpack",
+            "entry": "ItemTransferMain",
             "default_check": true,
             "description": "$task.ItemTransfer.description",
             "option": [
@@ -54,45 +54,141 @@
     ],
     "option": {
         "WhatToTransfer": {
-            "type": "input",
+            "type": "select",
             "label": "$ItemTransfer.option.WhatToTransfer.label",
-            "inputs": [
+            "default": "MidBattery",
+            "cases": [
                 {
-                    "name": "WhatToTransfer",
-                    "label": "$ItemTransfer.option.WhatToTransfer.input.label",
-                    "default": "蓝铁矿",
-                    "pipeline_type": "string"
-                }
-            ],
-            "pipeline_override": {
-                "ItemTransferToBackpack": {
-                    "recognition": {
-                        "param": {
-                            "custom_recognition_param": {
-                                "ItemName": "{WhatToTransfer}",
-                                "ContainerContent": null, // null(nil) as default, indicating not a cantainer
-                                "FirstRun": true,
-                                "ItemLastFoundRowAbs": null,
-                                "ItemLastFoundColumnX": null
+                    "name": "MidBattery",
+                    "label": "$ItemTransfer.item.MidBattery",
+                    "pipeline_override": {
+                        "ItemTransferToBackpack": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "中容谷地电池|Mid-Capacity Valley Battery|中容谷地電池",
+                                        "Category": "Product"
+                                    }
+                                }
+                            }
+                        },
+                        "ItemTransferToRepository": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "中容谷地电池|Mid-Capacity Valley Battery|中容谷地電池",
+                                        "Category": "Product"
+                                    }
+                                }
                             }
                         }
                     }
                 },
-                "ItemTransferToRepository": {
-                    "recognition": {
-                        "param": {
-                            "custom_recognition_param": {
-                                "ItemName": "{WhatToTransfer}",
-                                "ContainerContent": null, // null(nil) as default, indicating not a cantainer
-                                "FirstRun": true,
-                                "Target": "Backpack",
-                                "ItemLastFoundRowAbs": null,
-                                "ItemLastFoundColumnX": null
+                {
+                    "name": "HighBattery",
+                    "label": "$ItemTransfer.item.HighBattery",
+                    "pipeline_override": {
+                        "ItemTransferToBackpack": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "高容谷地电池|High-Capacity Valley Battery|高容谷地電池",
+                                        "Category": "Product"
+                                    }
+                                }
+                            }
+                        },
+                        "ItemTransferToRepository": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "高容谷地电池|High-Capacity Valley Battery|高容谷地電池",
+                                        "Category": "Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "BlueIronOre",
+                    "label": "$ItemTransfer.item.BlueIronOre",
+                    "pipeline_override": {
+                        "ItemTransferToBackpack": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "蓝铁矿|Blue Iron Ore|藍鐵礦",
+                                        "Category": "Material"
+                                    }
+                                }
+                            }
+                        },
+                        "ItemTransferToRepository": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "蓝铁矿|Blue Iron Ore|藍鐵礦",
+                                        "Category": "Material"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "OriginOre",
+                    "label": "$ItemTransfer.item.OriginOre",
+                    "pipeline_override": {
+                        "ItemTransferToBackpack": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "源矿|Origin Ore|源礦",
+                                        "Category": "Material"
+                                    }
+                                }
+                            }
+                        },
+                        "ItemTransferToRepository": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "源矿|Origin Ore|源礦",
+                                        "Category": "Material"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "SandLeaf",
+                    "label": "$ItemTransfer.item.SandLeaf",
+                    "pipeline_override": {
+                        "ItemTransferToBackpack": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "砂叶|Sand Leaf|砂葉",
+                                        "Category": "Plant"
+                                    }
+                                }
+                            }
+                        },
+                        "ItemTransferToRepository": {
+                            "recognition": {
+                                "param": {
+                                    "custom_recognition_param": {
+                                        "ItemName": "砂叶|Sand Leaf|砂葉",
+                                        "Category": "Plant"
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
+            ]
         },
         "TransferringContainer": {
             "type": "switch",
