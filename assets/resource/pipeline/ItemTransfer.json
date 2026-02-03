@@ -290,39 +290,87 @@
         }
     },
     // --- 切换到：素材 ---
+    // === 总入口：切换到矿物 ===
     "ItemTransferSwitchToMaterial": {
-        "doc": "识别并点击[矿物]分类标签",
+        "doc": "切换到矿物分类（组合逻辑）",
+        "next": [
+            "ItemTransferStatusMaterialSelected", // 1. 先看是不是已经选中了
+            "ItemTransferActionSwitchToMaterial" // 2. 没选中就找灰色图标点一下
+        ]
+    },
+    // 子节点 1：检查是否已选中 (高亮图标)
+    "ItemTransferStatusMaterialSelected": {
+        "doc": "检查矿物是否已高亮，如果是则跳过后续",
         "recognition": {
             "type": "TemplateMatch",
             "param": {
-                // 截取屏幕上方包含标签的那一条区域即可，不需要全屏扫
+                "template": "ItemTransfer/SelectedMaterialIcon.png", // 高亮图标
                 "roi": [
                     261,
                     167,
                     400,
                     41
                 ],
-                "template": "ItemTransfer/MaterialIcon.png",
+                "threshold": 0.8
+            }
+        },
+        "action": "DoNothing" // 识别到了说明已经在该页面，啥都不用干
+    },
+    // 子节点 2：执行切换 (灰色图标)
+    "ItemTransferActionSwitchToMaterial": {
+        "doc": "识别灰色矿物图标并点击",
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": "ItemTransfer/MaterialIcon.png", // 灰色图标
+                "roi": [
+                    261,
+                    167,
+                    400,
+                    41
+                ],
                 "threshold": 0.8
             }
         },
         "action": "Click",
-        // 点击后最好等一下 UI 刷新，防止立刻截图截到旧的
-        "post_wait_freezes": 100
+        "post_wait_freezes": 100 // 点击后等UI刷新
     },
     // --- 切换到：植物 ---
+    // === 总入口：切换到植物 ===
     "ItemTransferSwitchToPlant": {
-        "doc": "识别并点击[植物]分类标签",
+        "doc": "切换到植物分类（组合逻辑）",
+        "next": [
+            "ItemTransferStatusPlantSelected",
+            "ItemTransferActionSwitchToPlant"
+        ]
+    },
+    "ItemTransferStatusPlantSelected": {
         "recognition": {
             "type": "TemplateMatch",
             "param": {
+                "template": "ItemTransfer/SelectedPlantIcon.png",
                 "roi": [
                     261,
                     167,
                     400,
                     41
                 ],
+                "threshold": 0.8
+            }
+        },
+        "action": "DoNothing"
+    },
+    "ItemTransferActionSwitchToPlant": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
                 "template": "ItemTransfer/PlantIcon.png",
+                "roi": [
+                    261,
+                    167,
+                    400,
+                    41
+                ],
                 "threshold": 0.8
             }
         },
@@ -330,18 +378,41 @@
         "post_wait_freezes": 100
     },
     // --- 切换到：产物 ---
+    // === 总入口：切换到产物 ===
     "ItemTransferSwitchToProduct": {
-        "doc": "识别并点击[工业产物]分类标签",
+        "doc": "切换到产物分类（组合逻辑）",
+        "next": [
+            "ItemTransferStatusProductSelected",
+            "ItemTransferActionSwitchToProduct"
+        ]
+    },
+    "ItemTransferStatusProductSelected": {
         "recognition": {
             "type": "TemplateMatch",
             "param": {
+                "template": "ItemTransfer/SelectedProductIcon.png",
                 "roi": [
                     261,
                     167,
                     400,
                     41
                 ],
+                "threshold": 0.8
+            }
+        },
+        "action": "DoNothing"
+    },
+    "ItemTransferActionSwitchToProduct": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
                 "template": "ItemTransfer/ProductIcon.png",
+                "roi": [
+                    261,
+                    167,
+                    400,
+                    41
+                ],
                 "threshold": 0.8
             }
         },
