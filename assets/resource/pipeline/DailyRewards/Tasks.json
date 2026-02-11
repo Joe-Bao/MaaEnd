@@ -358,7 +358,7 @@
         "recognition": {
             "type": "TemplateMatch",
             "param": {
-                "template": "DailyRewards/CloseButton.png",
+                "template": "Common/BackButton.png",
                 "threshold": 0.9,
                 "roi": [
                     1215,
