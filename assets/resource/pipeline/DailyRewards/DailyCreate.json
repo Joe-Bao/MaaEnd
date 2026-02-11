@@ -70,7 +70,12 @@
             "type": "Click"
         },
         "next": [
-            "[JumpBack]ScenePrivateAnyEnterWorld"
+            "[JumpBack]ScenePrivateAnyEnterWorld",
+            "DailyTaskCreationFinish"
         ]
+    },
+    "DailyTaskCreationFinish": {
+        "pre_delay": 0,
+        "post_delay": 0
     }
 }

@@ -88,13 +88,14 @@
         "next": [
             "DailyTaskUpgradeWeapon",
             "DailyTaskCreation",
+            "DailyTaskAssemble",
             "[JumpBack]DailyTaskScrollDown",
             "DailyTaskScrollFinished"
         ]
     },
     "DailyTaskUpgradeWeapon": {
         "desc": "检测是否有升级武器任务",
-        "enable": true,
+        "enable": false,
         "max_hit": 1,
         "recognition": {
             "type": "OCR",
@@ -114,6 +115,55 @@
         "post_delay": 0,
         "next": [
             "DailyTaskCreationIsValid"
+        ]
+    },
+    "DailyTaskAssemble": {
+        "desc": "检测是否有制造装备任务",
+        "enable": false,
+        "max_hit": 1,
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "装备制造"
+                ],
+                "roi": [
+                    343,
+                    191,
+                    469,
+                    409
+                ]
+            }
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "DailyTaskAssembleIsValid"
+        ]
+    },
+    "DailyTaskAssembleIsValid": {
+        "desc": "检测升级武器任务是否可以执行",
+        "recognition": {
+            "type": "OCR",
+            "param": {
+                "expected": [
+                    "前往"
+                ],
+                "roi": "DailyTaskAssemble",
+                "roi_offset": [
+                    429,
+                    -10,
+                    94,
+                    20
+                ]
+            }
+        },
+        "action": {
+            "type": "Click"
+        },
+        "next": [
+            "[JumpBack]CheckWeaponInventory",
+            "PressEsc"
         ]
     },
     "DailyTaskUpgradeWeaponIsValid": {
@@ -143,7 +193,7 @@
     },
     "DailyTaskCreation": {
         "desc": "检测是否有简易制作任务",
-        "enable": true,
+        "enable": false,
         "max_hit": 1,
         "recognition": {
             "type": "OCR",
@@ -270,9 +320,9 @@
                 "template": "DailyRewards/ActivityReward.png",
                 "roi": [
                     185,
-                    475,
-                    35,
-                    35
+                    204,
+                    50,
+                    306
                 ],
                 "threshold": 0.9
             }
